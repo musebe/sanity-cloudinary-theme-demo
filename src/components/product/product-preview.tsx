@@ -24,6 +24,11 @@ export function ProductPreview({ theme }: ProductPreviewProps) {
     height: 900,
   })
 
+  const imageSrc = recolorUrl || theme.baseImageUrl
+  const imageAlt = recolorUrl
+    ? `${theme.productName} recolor preview`
+    : `${theme.productName} placeholder`
+
   return (
     <Card className="overflow-hidden rounded-3xl border-border/60">
       <CardContent className="p-0">
@@ -32,19 +37,11 @@ export function ProductPreview({ theme }: ProductPreviewProps) {
             <div className="flex h-full min-h-80 items-center justify-center rounded-2xl border border-dashed border-border bg-background">
               <div className="w-full max-w-xs space-y-3 text-center">
                 <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
-                  {recolorUrl ? (
-                    <img
-                      src={recolorUrl}
-                      alt={`${theme.productName} recolor preview`}
-                      className="h-auto w-full object-cover"
-                    />
-                  ) : (
-                    <img
-                      src={theme.baseImageUrl}
-                      alt={`${theme.productName} placeholder`}
-                      className="h-auto w-full object-cover"
-                    />
-                  )}
+                  <img
+                    src={imageSrc}
+                    alt={imageAlt}
+                    className="h-auto w-full object-cover"
+                  />
                 </div>
 
                 <p className="text-sm text-muted-foreground">
@@ -79,7 +76,7 @@ export function ProductPreview({ theme }: ProductPreviewProps) {
               <div className="rounded-2xl bg-muted p-4">
                 <p className="text-sm text-muted-foreground">Section status</p>
                 <p className="mt-1 text-sm">
-                  The preview now supports a mock Cloudinary recolor URL.
+                  Cloudinary preview is enabled only when the app flag is set.
                 </p>
               </div>
             </div>

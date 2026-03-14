@@ -4,6 +4,19 @@ import { TanStackDevtools } from "@tanstack/react-devtools"
 
 import appCss from "../styles.css?url"
 
+function NotFound() {
+  return (
+    <main className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-4">
+      <div className="space-y-3 text-center">
+        <h1 className="text-3xl font-semibold">Page not found</h1>
+        <p className="text-muted-foreground">
+          The page you requested does not exist.
+        </p>
+      </div>
+    </main>
+  )
+}
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -26,6 +39,7 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {

@@ -29,6 +29,15 @@ export interface BuildRecolorImageUrlOptions {
 }
 
 /**
+ * Returns true when Cloudinary preview is enabled in the client.
+ *
+ * @returns True when recolor preview should be used.
+ */
+export function isCloudinaryPreviewEnabled(): boolean {
+    return getPublicEnv("VITE_ENABLE_CLOUDINARY_PREVIEW") === "true"
+}
+
+/**
  * Builds a Cloudinary delivery URL that applies generative recolor.
  *
  * @remarks
@@ -42,7 +51,7 @@ export function buildRecolorImageUrl(
 ): string {
     const cloudName = getPublicEnv("VITE_CLOUDINARY_CLOUD_NAME")
 
-    if (!cloudName) {
+    if (!cloudName || !isCloudinaryPreviewEnabled()) {
         return ""
     }
 
