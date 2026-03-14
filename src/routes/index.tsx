@@ -25,19 +25,19 @@ function HomePage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <section className="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid w-full gap-8 lg:grid-cols-2 lg:gap-12">
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <div className="grid items-start gap-6 xl:grid-cols-[0.78fr_1.22fr] xl:gap-8">
           <Hero themeName={theme.name} />
           <ProductPreview theme={theme} />
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
         <Alert className="rounded-2xl">
           <AlertTitle>Live partner integration demo</AlertTitle>
           <AlertDescription>
-            The app now reads the active launch theme from Sanity and uses that
-            data to build a Cloudinary recolor preview at runtime.
+            The app reads the active launch theme from Sanity and builds a
+            Cloudinary recolor preview at runtime.
           </AlertDescription>
         </Alert>
       </section>

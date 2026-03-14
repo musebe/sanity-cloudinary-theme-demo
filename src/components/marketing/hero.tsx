@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 
 export interface HeroProps {
   /**
@@ -16,32 +15,25 @@ export interface HeroProps {
  */
 export function Hero({ themeName }: HeroProps) {
   return (
-    <div className="flex flex-col justify-center space-y-6">
+    <div className="space-y-4">
       <Badge variant="secondary" className="w-fit">
         Sanity + TanStack Start + Cloudinary
       </Badge>
 
-      <div className="space-y-4">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+      <div className="space-y-3">
+        <h1 className="max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">
           Dynamic product color theming
         </h1>
 
-        <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
+        <p className="max-w-xl text-sm text-muted-foreground sm:text-base">
           Change your launch theme in Sanity, then let your app recolor product
           imagery to match the selected brand color in real time.
         </p>
       </div>
 
-      <div className="rounded-2xl border bg-card p-4">
+      <div className="rounded-2xl border bg-card px-4 py-3">
         <p className="text-sm text-muted-foreground">Current live theme</p>
         <p className="mt-1 text-lg font-medium">{themeName}</p>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <Button size="lg">Live preview</Button>
-        <Button size="lg" variant="outline">
-          Sanity driven
-        </Button>
       </div>
     </div>
   )

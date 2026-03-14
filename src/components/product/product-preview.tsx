@@ -1,9 +1,14 @@
 import { useMemo, useState } from "react"
 
-import type { BrandTheme } from "@/types/theme"
-import { buildRecolorImageUrl } from "@/lib/cloudinary/url"
+import type { BrandTheme, HexColor } from "@/types/theme"
+import type { ThemeSwatch } from "@/components/product/color-swatch-picker"
+import { ColorSwatchPicker } from "@/components/product/color-swatch-picker"
+import { PreviewImagePanel } from "@/components/product/preview-image-panel"
 import { Card, CardContent } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
+import {
+  buildCloudinaryImageUrl,
+  buildRecolorImageUrl,
+} from "@/lib/cloudinary/url"
 
 export interface ProductPreviewProps {
   /**
@@ -13,70 +18,88 @@ export interface ProductPreviewProps {
 }
 
 /**
+ * Returns the set of demo swatches shown in the preview.
+ *
+ * @param baseColor - Active Sanity brand color.
+ * @returns Demo swatch list.
+ */
+function getThemeSwatches(baseColor: HexColor): Array<ThemeSwatch> {
+  return [
+    { label: "Autumn", color: baseColor },
+    { label: "Winter", color: "#3B82F6" },
+    { label: "Forest", color: "#2F855A" },
+    { label: "Berry", color: "#C53030" },
+    { label: "Midnight", color: "#1F2937" },
+  ]
+}
+
+/**
  * Renders the product preview panel.
  *
  * @param props - Component props.
  * @returns The product preview card.
  */
 export function ProductPreview({ theme }: ProductPreviewProps) {
-  const [showRecolor, setShowRecolor] = useState(true)
+  const [selectedColor, setSelectedColor] = useState<HexColor | null>(null)
+
+  const swatches = useMemo(
+    () => getThemeSwatches(theme.primaryColor),
+    [theme.primaryColor]
+  )
+
+  const originalImageUrl = useMemo(() => {
+    if (!theme.cloudinaryPublicId) {
+      return theme.cloudinarySecureUrl || theme.baseImageUrl
+    }
+
+    return (
+      buildCloudinaryImageUrl({
+        publicId: theme.cloudinaryPublicId,
+        width: 1200,
+        height: 1200,
+      }) ||
+      theme.cloudinarySecureUrl ||
+      theme.baseImageUrl
+    )
+  }, [theme.baseImageUrl, theme.cloudinaryPublicId, theme.cloudinarySecureUrl])
 
   const recolorUrl = useMemo(() => {
-    if (!theme.cloudinaryPublicId) {
+    if (!theme.cloudinaryPublicId || !selectedColor) {
       return ""
     }
 
     return buildRecolorImageUrl({
       publicId: theme.cloudinaryPublicId,
-      color: theme.primaryColor,
+      color: selectedColor,
       prompt: "bottle",
-      width: 900,
-      height: 900,
+      width: 1200,
+      height: 1200,
     })
-  }, [theme.cloudinaryPublicId, theme.primaryColor])
+  }, [selectedColor, theme.cloudinaryPublicId])
 
-  const originalImageUrl = theme.cloudinarySecureUrl || theme.baseImageUrl
-  const previewImageUrl =
-    showRecolor && recolorUrl ? recolorUrl : originalImageUrl
+  const previewImageUrl = recolorUrl || originalImageUrl
+  const displayColor = selectedColor || theme.primaryColor
+  const isRecolored = Boolean(selectedColor && recolorUrl)
 
   return (
     <Card className="overflow-hidden rounded-3xl border-border/60 shadow-sm">
       <CardContent className="p-0">
-        <div className="grid gap-0 md:grid-cols-[1.15fr_0.85fr]">
-          <div className="bg-muted/40 p-6 sm:p-8">
-            <div className="flex h-full min-h-80 items-center justify-center rounded-2xl border border-dashed border-border bg-background p-4">
-              <div className="w-full max-w-sm space-y-4">
-                <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
-                  <img
-                    src={previewImageUrl}
-                    alt={`${theme.productName} preview`}
-                    className="h-auto w-full object-cover"
-                  />
-                </div>
+        <div className="grid gap-0 lg:grid-cols-[1.45fr_0.75fr]">
+          <PreviewImagePanel
+            productName={theme.productName}
+            imageSrc={previewImageUrl}
+            imageAlt={`${theme.productName} preview`}
+            isRecolored={isRecolored}
+            controls={
+              <ColorSwatchPicker
+                swatches={swatches}
+                selectedColor={selectedColor}
+                onSelectColor={setSelectedColor}
+              />
+            }
+          />
 
-                <div className="flex items-center justify-between rounded-2xl border bg-card px-4 py-3">
-                  <div>
-                    <p className="text-sm font-medium">Recolor preview</p>
-                    <p className="text-xs text-muted-foreground">
-                      Toggle between original and themed image
-                    </p>
-                  </div>
-
-                  <Switch
-                    checked={showRecolor}
-                    onCheckedChange={setShowRecolor}
-                    aria-label="Toggle recolor preview"
-                  />
-                </div>
-
-                <p className="text-center text-sm text-muted-foreground">
-                  {theme.productName} preview
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-between bg-background p-6 sm:p-8">
+          <div className="flex flex-col justify-between bg-background p-5 sm:p-6">
             <div className="space-y-5">
               <div>
                 <p className="text-sm text-muted-foreground">Active theme</p>
@@ -85,15 +108,15 @@ export function ProductPreview({ theme }: ProductPreviewProps) {
 
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  Brand primary color
+                  Selected preview color
                 </p>
                 <div className="flex items-center gap-3">
                   <span
                     className="h-8 w-8 rounded-full border"
-                    style={{ backgroundColor: theme.primaryColor }}
+                    style={{ backgroundColor: displayColor }}
                   />
                   <code className="rounded-md bg-muted px-2 py-1 text-sm">
-                    {theme.primaryColor}
+                    {displayColor}
                   </code>
                 </div>
               </div>
@@ -108,9 +131,9 @@ export function ProductPreview({ theme }: ProductPreviewProps) {
               </div>
 
               <div className="rounded-2xl bg-muted p-4">
-                <p className="text-sm text-muted-foreground">Live data</p>
+                <p className="text-sm text-muted-foreground">Live demo state</p>
                 <p className="mt-1 text-sm">
-                  This preview uses Sanity content and Cloudinary transforms.
+                  Click a swatch to preview a new themed product color.
                 </p>
               </div>
             </div>
