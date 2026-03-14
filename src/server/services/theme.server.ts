@@ -1,6 +1,6 @@
-import type { BrandTheme, CloudinaryAssetValue } from '@/types/theme'
-import { createSanityClient } from '@/lib/sanity/client'
+import type { BrandTheme } from '@/types/theme'
 import { activeLaunchThemeQuery } from '@/lib/sanity/queries'
+import { getSanityConfig } from '@/lib/sanity/client'
 import { getMockBrandTheme, normalizeHexColor } from '@/lib/theme/brand'
 
 interface SanityLaunchThemeResult {
@@ -11,7 +11,18 @@ interface SanityLaunchThemeResult {
     }
     brandPrimaryColor: string
     productName: string
-    productImage?: CloudinaryAssetValue
+    productImage?: {
+        public_id?: string
+        secure_url?: string
+        width?: number
+        height?: number
+        format?: string
+        version?: number
+    }
+}
+
+interface SanityQueryResponse<T> {
+    result: T
 }
 
 /**
@@ -35,21 +46,37 @@ function mapSanityThemeToBrandTheme(
 }
 
 /**
- * Loads the active brand theme on the server.
- *
- * @remarks
- * Falls back to local mock data if Sanity returns nothing.
+ * Fetches the active launch theme from Sanity over the HTTP Query API.
  *
  * @returns The active brand theme.
  */
 export async function getActiveBrandTheme(): Promise<BrandTheme> {
-    const client = createSanityClient()
-    const document =
-        await client.fetch<SanityLaunchThemeResult | null>(activeLaunchThemeQuery)
+    const { projectId, dataset, apiVersion } = getSanityConfig()
 
-    if (!document) {
+    const endpoint = new URL(
+        `https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`,
+    )
+
+    endpoint.searchParams.set('query', activeLaunchThemeQuery)
+
+    const response = await fetch(endpoint.toString(), {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+        },
+        cache: 'no-store',
+    })
+
+    if (!response.ok) {
+        throw new Error(`Sanity query failed with status ${response.status}`)
+    }
+
+    const payload =
+        (await response.json()) as SanityQueryResponse<SanityLaunchThemeResult | null>
+
+    if (!payload.result) {
         return getMockBrandTheme()
     }
 
-    return mapSanityThemeToBrandTheme(document)
+    return mapSanityThemeToBrandTheme(payload.result)
 }
