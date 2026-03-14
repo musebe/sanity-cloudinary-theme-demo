@@ -35,6 +35,7 @@ export function getMockBrandTheme(): BrandTheme {
         name: "Autumn Orange",
         primaryColor: "#DD7A2E",
         productName: "Nimbus Bottle",
-        baseImageUrl: "/images/product-placeholder.png",
+        baseImageUrl: "/images/product-bottle.png",
+        cloudinaryPublicId: "sanity-theme-demo/nimbus-bottle",
     }
 }

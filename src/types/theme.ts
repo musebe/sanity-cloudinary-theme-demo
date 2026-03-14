@@ -31,10 +31,12 @@ export interface BrandTheme {
     productName: string
 
     /**
-     * Source product image before recolor.
-     *
-     * @remarks
-     * In this section this is only a mock path.
+     * Local fallback image path.
      */
     baseImageUrl: string
+
+    /**
+     * Cloudinary public id for the product asset.
+     */
+    cloudinaryPublicId: string
 }

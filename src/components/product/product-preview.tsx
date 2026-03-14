@@ -1,4 +1,5 @@
 import type { BrandTheme } from "@/types/theme"
+import { buildRecolorImageUrl } from "@/lib/cloudinary/url"
 import { Card, CardContent } from "@/components/ui/card"
 
 export interface ProductPreviewProps {
@@ -15,19 +16,37 @@ export interface ProductPreviewProps {
  * @returns The product preview card.
  */
 export function ProductPreview({ theme }: ProductPreviewProps) {
+  const recolorUrl = buildRecolorImageUrl({
+    publicId: theme.cloudinaryPublicId,
+    color: theme.primaryColor,
+    prompt: "bottle",
+    width: 900,
+    height: 900,
+  })
+
   return (
     <Card className="overflow-hidden rounded-3xl border-border/60">
       <CardContent className="p-0">
         <div className="grid gap-0 md:grid-cols-[1.1fr_0.9fr]">
           <div className="bg-muted/40 p-6 sm:p-8">
             <div className="flex h-full min-h-80 items-center justify-center rounded-2xl border border-dashed border-border bg-background">
-              <div className="space-y-3 text-center">
-                <div
-                  className="mx-auto h-40 w-40 rounded-3xl border shadow-sm transition-transform duration-300 hover:scale-[1.02]"
-                  style={{
-                    background: `linear-gradient(135deg, ${theme.primaryColor} 0%, #1f2937 180%)`,
-                  }}
-                />
+              <div className="w-full max-w-xs space-y-3 text-center">
+                <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
+                  {recolorUrl ? (
+                    <img
+                      src={recolorUrl}
+                      alt={`${theme.productName} recolor preview`}
+                      className="h-auto w-full object-cover"
+                    />
+                  ) : (
+                    <img
+                      src={theme.baseImageUrl}
+                      alt={`${theme.productName} placeholder`}
+                      className="h-auto w-full object-cover"
+                    />
+                  )}
+                </div>
+
                 <p className="text-sm text-muted-foreground">
                   {theme.productName} preview
                 </p>
@@ -60,7 +79,7 @@ export function ProductPreview({ theme }: ProductPreviewProps) {
               <div className="rounded-2xl bg-muted p-4">
                 <p className="text-sm text-muted-foreground">Section status</p>
                 <p className="mt-1 text-sm">
-                  This preview uses local mock server data.
+                  The preview now supports a mock Cloudinary recolor URL.
                 </p>
               </div>
             </div>
