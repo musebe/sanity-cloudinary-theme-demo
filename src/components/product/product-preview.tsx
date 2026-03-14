@@ -1,6 +1,9 @@
+import { useMemo, useState } from "react"
+
 import type { BrandTheme } from "@/types/theme"
 import { buildRecolorImageUrl } from "@/lib/cloudinary/url"
 import { Card, CardContent } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
 
 export interface ProductPreviewProps {
   /**
@@ -16,37 +19,57 @@ export interface ProductPreviewProps {
  * @returns The product preview card.
  */
 export function ProductPreview({ theme }: ProductPreviewProps) {
-  const recolorUrl = theme.cloudinaryPublicId
-    ? buildRecolorImageUrl({
-        publicId: theme.cloudinaryPublicId,
-        color: theme.primaryColor,
-        prompt: "bottle",
-        width: 900,
-        height: 900,
-      })
-    : ""
+  const [showRecolor, setShowRecolor] = useState(true)
 
-  const imageSrc = recolorUrl || theme.cloudinarySecureUrl || theme.baseImageUrl
-  const imageAlt = recolorUrl
-    ? `${theme.productName} recolor preview`
-    : `${theme.productName} product image`
+  const recolorUrl = useMemo(() => {
+    if (!theme.cloudinaryPublicId) {
+      return ""
+    }
+
+    return buildRecolorImageUrl({
+      publicId: theme.cloudinaryPublicId,
+      color: theme.primaryColor,
+      prompt: "bottle",
+      width: 900,
+      height: 900,
+    })
+  }, [theme.cloudinaryPublicId, theme.primaryColor])
+
+  const originalImageUrl = theme.cloudinarySecureUrl || theme.baseImageUrl
+  const previewImageUrl =
+    showRecolor && recolorUrl ? recolorUrl : originalImageUrl
 
   return (
-    <Card className="overflow-hidden rounded-3xl border-border/60">
+    <Card className="overflow-hidden rounded-3xl border-border/60 shadow-sm">
       <CardContent className="p-0">
-        <div className="grid gap-0 md:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid gap-0 md:grid-cols-[1.15fr_0.85fr]">
           <div className="bg-muted/40 p-6 sm:p-8">
-            <div className="flex h-full min-h-80 items-center justify-center rounded-2xl border border-dashed border-border bg-background">
-              <div className="w-full max-w-xs space-y-3 text-center">
+            <div className="flex h-full min-h-80 items-center justify-center rounded-2xl border border-dashed border-border bg-background p-4">
+              <div className="w-full max-w-sm space-y-4">
                 <div className="overflow-hidden rounded-3xl border bg-white shadow-sm">
                   <img
-                    src={imageSrc}
-                    alt={imageAlt}
+                    src={previewImageUrl}
+                    alt={`${theme.productName} preview`}
                     className="h-auto w-full object-cover"
                   />
                 </div>
 
-                <p className="text-sm text-muted-foreground">
+                <div className="flex items-center justify-between rounded-2xl border bg-card px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium">Recolor preview</p>
+                    <p className="text-xs text-muted-foreground">
+                      Toggle between original and themed image
+                    </p>
+                  </div>
+
+                  <Switch
+                    checked={showRecolor}
+                    onCheckedChange={setShowRecolor}
+                    aria-label="Toggle recolor preview"
+                  />
+                </div>
+
+                <p className="text-center text-sm text-muted-foreground">
                   {theme.productName} preview
                 </p>
               </div>
@@ -75,10 +98,19 @@ export function ProductPreview({ theme }: ProductPreviewProps) {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Cloudinary asset
+                </p>
+                <code className="block rounded-xl bg-muted px-3 py-2 text-xs break-all">
+                  {theme.cloudinaryPublicId || "No Cloudinary asset selected"}
+                </code>
+              </div>
+
               <div className="rounded-2xl bg-muted p-4">
                 <p className="text-sm text-muted-foreground">Live data</p>
                 <p className="mt-1 text-sm">
-                  This preview now reads theme data from Sanity.
+                  This preview uses Sanity content and Cloudinary transforms.
                 </p>
               </div>
             </div>

@@ -28,19 +28,19 @@ export function Hero({ themeName }: HeroProps) {
 
         <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
           Change your launch theme in Sanity, then let your app recolor product
-          imagery to match the selected brand color.
+          imagery to match the selected brand color in real time.
         </p>
       </div>
 
       <div className="rounded-2xl border bg-card p-4">
-        <p className="text-sm text-muted-foreground">Current demo theme</p>
+        <p className="text-sm text-muted-foreground">Current live theme</p>
         <p className="mt-1 text-lg font-medium">{themeName}</p>
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button size="lg">Preview demo</Button>
+        <Button size="lg">Live preview</Button>
         <Button size="lg" variant="outline">
-          View setup
+          Sanity driven
         </Button>
       </div>
     </div>

@@ -34,10 +34,10 @@ function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
         <Alert className="rounded-2xl">
-          <AlertTitle>Section 2 complete</AlertTitle>
+          <AlertTitle>Live partner integration demo</AlertTitle>
           <AlertDescription>
-            The page now loads theme data through a TanStack Start server
-            function using local mock data. Sanity and Cloudinary come next.
+            The app now reads the active launch theme from Sanity and uses that
+            data to build a Cloudinary recolor preview at runtime.
           </AlertDescription>
         </Alert>
       </section>
