@@ -16,18 +16,20 @@ export interface ProductPreviewProps {
  * @returns The product preview card.
  */
 export function ProductPreview({ theme }: ProductPreviewProps) {
-  const recolorUrl = buildRecolorImageUrl({
-    publicId: theme.cloudinaryPublicId,
-    color: theme.primaryColor,
-    prompt: "bottle",
-    width: 900,
-    height: 900,
-  })
+  const recolorUrl = theme.cloudinaryPublicId
+    ? buildRecolorImageUrl({
+        publicId: theme.cloudinaryPublicId,
+        color: theme.primaryColor,
+        prompt: "bottle",
+        width: 900,
+        height: 900,
+      })
+    : ""
 
-  const imageSrc = recolorUrl || theme.baseImageUrl
+  const imageSrc = recolorUrl || theme.cloudinarySecureUrl || theme.baseImageUrl
   const imageAlt = recolorUrl
     ? `${theme.productName} recolor preview`
-    : `${theme.productName} placeholder`
+    : `${theme.productName} product image`
 
   return (
     <Card className="overflow-hidden rounded-3xl border-border/60">
@@ -74,9 +76,9 @@ export function ProductPreview({ theme }: ProductPreviewProps) {
               </div>
 
               <div className="rounded-2xl bg-muted p-4">
-                <p className="text-sm text-muted-foreground">Section status</p>
+                <p className="text-sm text-muted-foreground">Live data</p>
                 <p className="mt-1 text-sm">
-                  Cloudinary preview is enabled only when the app flag is set.
+                  This preview now reads theme data from Sanity.
                 </p>
               </div>
             </div>

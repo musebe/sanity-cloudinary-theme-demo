@@ -7,6 +7,41 @@
 export type HexColor = `#${string}`
 
 /**
+ * Cloudinary asset data stored in Sanity.
+ */
+export interface CloudinaryAssetValue {
+    /**
+     * Cloudinary public id.
+     */
+    public_id: string
+
+    /**
+     * Secure delivery URL.
+     */
+    secure_url: string
+
+    /**
+     * Asset width.
+     */
+    width?: number
+
+    /**
+     * Asset height.
+     */
+    height?: number
+
+    /**
+     * Asset format.
+     */
+    format?: string
+
+    /**
+     * Cloudinary version number.
+     */
+    version?: number
+}
+
+/**
  * Brand theme data used by the demo app.
  */
 export interface BrandTheme {
@@ -39,4 +74,9 @@ export interface BrandTheme {
      * Cloudinary public id for the product asset.
      */
     cloudinaryPublicId: string
+
+    /**
+     * Original Cloudinary image URL.
+     */
+    cloudinarySecureUrl?: string
 }
